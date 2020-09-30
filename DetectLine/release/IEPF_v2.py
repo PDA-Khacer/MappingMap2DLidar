@@ -93,36 +93,6 @@ def seedSegment(points, Snum, Pmin):
             d3 = -1.0
             if k != j:
                 d3 = distantPointToPoint(points[k], points[k + 1])
-            # #################--------------------------------------------------------
-            # if index > 210:
-            #     print_point(res[0])
-            #     x = []
-            #     y = []
-            #     for index1 in range(index, j):
-            #         x.append(points[index1].get('x'))
-            #         y.append(points[index1].get('y'))
-            #     plt.scatter(x, y, label="point " + str(index) + " " + str(j), s=10, color='red')
-            #     x = np.linspace(min(x), max(x), 2000)
-            #     y = line.get('a') * x + line.get('c')
-            #     plt.plot(x, y, color='b', label="line | " + str(d3))
-            #     x = []
-            #     y = []
-            #     x.append(pre_point['x'])
-            #     y.append(pre_point['y'])
-            #     plt.scatter(x, y, s=10, marker="*", color='black')
-            #     x = []
-            #     y = []
-            #     x.append(points[k]['x'])
-            #     y.append(points[k]['y'])
-            #     plt.scatter(x, y, label="point "+str(k)+' d1 = '+str(d1)+'d2 = '+str(d2), s=10, marker="*", color='g')
-            #     mng = plt.get_current_fig_manager()
-            #     mng.full_screen_toggle()
-            #     plt.legend()
-            #     plt.show()
-            # ######################--------------------------------------------------
-            # if d1 > dPTP:
-            #     flag = False
-            #     break
             if d2 > dPTL:
                 flag = False
                 break
@@ -139,18 +109,6 @@ def seedSegment(points, Snum, Pmin):
 
 def regionGrowing(points, seed, Np, Pmin, Lmin):
     line = dict(pb=seed.get("i"), pf=seed.get("j"), line=seed.get("line"))
-    # ####################
-    # x = []
-    # y = []
-    # for j in range(line['pb'], line['pf']):
-    #     x.append(points[j]['x'])
-    #     y.append(points[j]['y'])
-    # plt.scatter(x, y, label='line root', s=5, c='b')
-    # plt.scatter([points[line['pb']]['x']], [points[line['pf']+1]['y']], label='point add', s=5, c='r')
-    # line["pf"] += 1
-    # plt.legend()
-    # plt.show()
-    # ####################
     while distantPointToLine(points[line["pf"]], line["line"]) < dPTL_rg:
         if line["pf"] >= Np:  # line["pf"] < len(points)
             break
@@ -166,8 +124,6 @@ def regionGrowing(points, seed, Np, Pmin, Lmin):
             line["line"] = fitSeed(points[line["pb"]:line["pf"]])
         line["pb"] -= 1
     line["pb"] += 1
-
-    # line_001 = create_endpoint(points, line)
     if line["pf"] - line["pb"] + 1 > Pmin and 999 >= Lmin:  # define lại Ll
         return line
     else:
@@ -178,22 +134,6 @@ def overlap_region(points, segments):
     for index1 in range(len(segments) - 1):
         index2 = index1 + 1
         segments = sorted(segments, key=lambda k: k['pb'])
-        # ##################################
-        # x = []
-        # y = []
-        # for j in range(segments[index1]['pb'], segments[index1]['pf']):
-        #     x.append(points[j]['x'])
-        #     y.append(points[j]['y'])
-        # plt.scatter(x, y, label='line' + str(index1), s=5, c=numpy.random.rand(3, ))
-        # x = []
-        # y = []
-        # for j in range(segments[index2]['pb'], segments[index2]['pf']):
-        #     x.append(points[j]['x'])
-        #     y.append(points[j]['y'])
-        # plt.scatter(x, y, label='line' + str(index2), s=5, c=numpy.random.rand(3, ))
-        # plt.legend()
-        # plt.show()
-        # ##################################
         if segments[index1]['pf'] >= segments[index2]['pb']:
             d = -1
             for k in range(segments[index2]['pb'], segments[index1]['pf']):
@@ -204,7 +144,6 @@ def overlap_region(points, segments):
                     continue
                 else:
                     break
-            # if d != -1 and abs(segments[index1]['pb'] - d) > 1 and abs(segments[index2]['pf'] - d - 1) > 1:
             if d != -1:
                 segments[index1]['pf'] = d - 1
                 segments[index2]['pb'] = d + 1
@@ -263,14 +202,6 @@ def linkLine(points, segment_line, pMin):
     re = []
     # loại bỏ những đường có số điểm < p min và nối chúng với đường trước nó
     # có thể phát triển điều kiện kiếm tra 2 đường đó gần đường nào hơn để tiến hành ghép
-    # hàm nối với đường trước nó
-    # for index in range(len(segment_line)-1):
-    #     if segment_line[index]['pf'] - segment_line[index]['pb'] + 1 < pMin:
-    #         if len(re) != 0:
-    #             re[len(re)-1]["pf"] = segment_line[index]['pf']
-    #     else:
-    #         re.append(segment_line[index])
-    # hàm nối với đường trước hoặc sau
     for index in range(len(segment_line)):
         if segment_line[index]['pf'] - segment_line[index]['pb'] + 1 < pMin:
             if len(re) != 0 and index != len(segment_line) - 1:
@@ -319,68 +250,13 @@ def linkLine(points, segment_line, pMin):
     return re
 
 
-def print_0(item):
-    for it in item:
-        print(it)
-    print()
-
-
-def print_1(item):
-    for i in range(len(item)):
-        x = []
-        y = []
-        for j in range(item[i]['i'], item[i]['j']):
-            x.append(res[0][j]['x'])
-            y.append(res[0][j]['y'])
-        plt.scatter(x, y, label='line' + str(i), s=5, c=numpy.random.rand(3, ))
-    plt.legend()
-    plt.show()
-
-
-def print_11(item):
-    for i in range(len(item)):
-        x = []
-        y = []
-        for j in range(item[i]['i'], item[i]['j']):
-            x.append(res[0][j]['x'])
-            y.append(res[0][j]['y'])
-        plt.scatter(x, y, label='line' + str(i), s=5, c=numpy.random.rand(3, ))
-        plt.legend()
-        plt.show()
-
-
-def print_2(item):
-    for i in range(len(item)):
-        x = []
-        y = []
-        for j in range(item[i]['pb'], item[i]['pf']):
-            x.append(res[0][j]['x'])
-            y.append(res[0][j]['y'])
-        plt.scatter(x, y, label='line' + str(i), s=5, c=numpy.random.rand(3, ))
-    plt.legend()
-    plt.show()
-
-
-def print_point(res):
-    x = []
-    y = []
-    for i in res:
-        x.append(i['x'])
-        y.append(i['y'])
-    plt.scatter(x, y, s=10, color='teal')
-
-
-res = dataSet("D:\\Document\\MTA\\BigProject\\DTKH\\2020\\Source\\Data\\myOutput1.csv")
+res = dataSet("..\\data\\data1.txt")
 for ij in range(len(res)):
     print_point(res[ij])
     segment = seedSegment(res[ij], 30, 8)
-    # print_1(segment)
-    # print_0(segment)
     segment_seed = []
     for i in range(len(segment)):
         segment_seed.append(regionGrowing(res[ij], segment[i], len(res[ij]), 8, 3))
-    # print_0(segment_seed)
-    # remove vùng con và trùng nhau
     segment_seed = removeExcess(segment_seed)
     lineRes = segment_seed
     lineRes = overlap_region(res[ij], sorted(segment_seed, key=lambda k: k['pb'], reverse=False))
@@ -396,16 +272,3 @@ for ij in range(len(res)):
         plt.plot(x, y, label='line' + str(i))
     plt.legend()
     plt.show()
-
-# ##########################################################################################+
-#     for i in range(len(lineRes)):
-#         x = []
-#         y = []
-#         print(i, lineRes[i])
-#         for j in range(lineRes[i]['pb'], lineRes[i]['pf']):
-#             x.append(res[0][j]['x'])
-#             y.append(res[0][j]['y'])
-#         plt.scatter(x, y, label='line' + str(i), s=5, c=numpy.random.rand(3, ))
-#     plt.legend()
-#     plt.show()
-# ##########################################################################################
